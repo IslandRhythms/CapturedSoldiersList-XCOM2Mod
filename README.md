@@ -1,0 +1,1 @@
+# CapturedSoldiersList-XCOM2Mod
