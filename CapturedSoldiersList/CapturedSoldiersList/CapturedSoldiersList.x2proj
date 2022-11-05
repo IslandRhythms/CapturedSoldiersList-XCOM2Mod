@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Guid>119b1a0a-bdaa-49f5-9ff2-24e7df51e1d0</Guid>
+    <Name>CapturedSoldiersList</Name>
+    <Description>Adds a page in the avenger where you can see what troops are currently in Advent/Chosen hands.
+
+tags= War Of The Chosen, UI, Facility, Gameplay</Description>
+    <SteamPublishID>0</SteamPublishID>
+    <AssemblyName>CapturedSoldiersList</AssemblyName>
+    <RootNamespace>CapturedSoldiersList</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
+    <Folder Include="Localization\" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\CapturedSoldiersList\" />
+    <Folder Include="Src\CapturedSoldiersList\Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+    <Content Include="ModPreview.jpg" />
+    <Content Include="Config\XComEditor.ini" />
+    <Content Include="Config\XComEngine.ini" />
+    <Content Include="Config\XComGame.ini" />
+    <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiersManager.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiersNavHelpHook.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiersScreen.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiers_Details.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiers_ListItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\UISL_HookBar.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\CapturedSoldiersList\Classes\X2DownloadableContentInfo_CapturedSoldiersList.uc" />
+  </ItemGroup>
+  <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
+</Project>

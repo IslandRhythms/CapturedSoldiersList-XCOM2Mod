@@ -1,0 +1,1 @@
+class CapturedSoldiers_Details extends UIScreen;
