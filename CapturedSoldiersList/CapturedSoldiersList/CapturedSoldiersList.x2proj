@@ -43,6 +43,9 @@ tags= War Of The Chosen, UI, Facility, Gameplay</Description>
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\CapturedSoldiersList\Classes\X2DownloadableContentInfo_CapturedSoldiersList.uc" />
+    <Content Include="Src\CapturedSoldiersList\Classes\X2EventListener_Template.uc">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
 </Project>

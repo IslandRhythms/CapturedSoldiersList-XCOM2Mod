@@ -73,7 +73,6 @@ simulated function OnCancel()
 simulated function bool OnUnrealCommand(int cmd, int arg)
 {
 	local TDialogueBoxData DialogData;
-	`log("Keypress:" @ cmd, false,'GlobalMemorialScreen');
 
 	if( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
 		return false;
@@ -108,7 +107,6 @@ simulated function PopulateData()
 
 	foreach class'CapturedSoldiersManager'.default.DeadSoldiers(Detail)
 	{
-		`log("Entry added" @ Detail.SoldierID,,'GlobalMemorialScreen');
 		CapturedSoldiers_ListItem(MemorialList.CreateItem(class'CapturedSoldiers_ListItem')).InitItem(Detail); //.ProcessMouseEvents(OnItemMouseEvent);
 	}
 	MemorialList.RealizeItems();
@@ -118,7 +116,6 @@ simulated function PopulateData()
 
 simulated function ChangeSelection(UIList ContainerList, int ItemIndex)
 {
-	`log("Change selection:"@ItemIndex,,'GlobalMemorialScreen');
 	if (LastHighlighted != none)
 		LastHighlighted.SetHighlighted(false);
 	LastHighlighted = CapturedSoldiers_ListItem(MemorialList.GetSelectedItem());
@@ -156,7 +153,6 @@ simulated function OnItemMouseEvent(UIPanel ListItem, int cmd)
 
 simulated function OnDeceasedSelected( UIList kList, int index )
 {
-	`log("OnDeceasedSelected" @ index,,'GlobalMemorialScreen');
 	if( !CapturedSoldiers_ListItem(kList.GetItem(index)).IsDisabled )
 	{
 		OpenMemorialDetail(CapturedSoldiers_ListItem(kList.GetItem(index)));
@@ -231,14 +227,7 @@ simulated function OpenMemorialDetail(CapturedSoldiers_ListItem icon)
 
 	DialogData.eType = eDialog_Normal;
 	DialogData.strTitle = Detail.SoldierName@"from"@Detail.CountryName;
-	/*if (Detail.HasCustomization)
-	{
-		DialogData.strAccept = "Save to character pool";
-		DialogData.strCancel = class'UIDialogueBox'.default.m_strDefaultAcceptLabel;
-		DialogData.fnCallback = SaveToCharacterPool;
-	}
-	else*/
-		DialogData.strAccept = class'UIDialogueBox'.default.m_strDefaultAcceptLabel;
+	DialogData.strAccept = class'UIDialogueBox'.default.m_strDefaultAcceptLabel;
 
 	StrDetails = "Achieved rank of"@Detail.RankName@"as"@Detail.ClassName;
 	StrDetails = StrDetails $ "\nMissions participated:" @ Detail.Missions;

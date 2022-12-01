@@ -5,17 +5,17 @@ static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
-	Templates.AddItem(CreateListener_CovertActionCompleted());
+	Templates.AddItem(CapturedSoldiersList_CreateListener_CovertActionCompleted());
 
 	return Templates;
 }
 
 //create the listener
-static function X2EventListenerTemplate CreateListener_CovertActionCompleted()
+static function X2EventListenerTemplate CapturedSoldiersList_CreateListener_CovertActionCompleted()
 {
 	local CHEventListenerTemplate Template;
 
-	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'CovertActionCompleted');
+	`CREATE_X2TEMPLATE(class'CHEventListenerTemplate', Template, 'CapturedSoldiersList_CovertActionCompleted');
 
 	Template.RegisterInTactical = false;	//listen during missions
 	Template.RegisterInStrategy = true;		//listen during avenger
@@ -40,8 +40,8 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 	local XComGameStateHistory History;
 
     CovAct = XComGameState_CovertAction(EventSource);
-	`log("++++++++++++++++++++++++++++++++++++++++");
-	`log("Covert Action Completed Listener");
+	// `log("++++++++++++++++++++++++++++++++++++++++");
+	// `log("Covert Action Completed Listener");
     if (CovAct != none)
     {
 		CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
@@ -54,7 +54,7 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 			SlotState = CovAct.GetStaffSlot(i);
 			Unit = SlotState.GetAssignedStaff();
 			if (Unit.bCaptured && Unit.IsSoldier() && Unit.IsAlive()) {
-				`log("Unit was captured" @ Unit.GetFullName());
+				// `log("Unit was captured" @ Unit.GetFullName());
 				for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
 				{
 					CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
@@ -74,7 +74,7 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 			}
 			Captor = ""; // so the if statement can keep executing
 			} else {
-				`log("Unit was not captured" @ Unit.GetFullName());
+				// `log("Unit was not captured" @ Unit.GetFullName());
 			}
 		}
 		

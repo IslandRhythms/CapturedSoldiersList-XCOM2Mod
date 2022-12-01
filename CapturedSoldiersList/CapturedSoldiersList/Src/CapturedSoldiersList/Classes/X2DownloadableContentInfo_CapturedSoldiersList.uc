@@ -110,7 +110,6 @@ exec function populateCapturedSoldiersList()
 		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AlienHQ.CapturedSoldiers[i].ObjectID));
 		Captor = "Advent";
 		CaptorFullName = Captor;
-		`log("Captor is" @Captor);
 		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, "Advent");
 	}
 
@@ -120,7 +119,6 @@ exec function populateCapturedSoldiersList()
 		CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
 		Captor = string(ChosenState.GetMyTemplateName());
 		Captor = Split(Captor, "_", true);
-		`log("Captor is" @Captor);
 		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
 	}
 
@@ -181,8 +179,6 @@ static event OnPostMission()
 	local XComGameState_AdventChosen ChosenState;
 	local int i;
 	local String Captor, CaptorFullName;
-	`log("######################################");
-	`log("OnPostMission hook ran");
 	class 'CapturedSoldiersManager'.static.WipeList(); // resource intensive but I don't feel like figuring out the correct solution.
 	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
 	CampaignIndex = CampaignSettingsStateObject.GameIndex;
