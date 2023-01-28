@@ -19,5 +19,5 @@ Highlander is required because it is built with it.
 [/list]
 
 
-If you want to say more than thank you, feel free to [url=https://www.buymeacoffee.com/TheIslandRhythm]Buy me an apple[/url]
+If you want to say more than thank you, feel free to [url=https://www.buymeacoffee.com/TheIslandRhythm] Buy me an apple[/url]
 
