@@ -178,18 +178,18 @@ simulated static function bool SoldierIsCaptured(int UnitID) {
 
 	History = `XCOMHISTORY;
 	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
-	ChosenState = XComGameState_AdventChosen(History.GetSingleGameStateObjectForClass(class'XComGameState_AdventChosen'));
 
 	foreach AlienHQ.CapturedSoldiers(Entry) {
 		if (Entry.ObjectID == UnitID) {
 			return true;
 		}
 	}
-
-	foreach ChosenState.CapturedSoldiers(Entry) {
-		if (Entry.ObjectID == UnitID) {
-			return true;
-		}
+	foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
+			foreach ChosenState.CapturedSoldiers(Entry) {
+				if (Entry.ObjectID == UnitID) {
+					return true;
+				}
+			}
 	}
 
 	return false;

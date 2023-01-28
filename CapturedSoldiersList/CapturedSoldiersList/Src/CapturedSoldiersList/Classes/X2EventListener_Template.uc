@@ -47,7 +47,6 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 		CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
 		CampaignIndex = CampaignSettingsStateObject.GameIndex;
 		History = `XCOMHISTORY;
-		ChosenState = XComGameState_AdventChosen(History.GetSingleGameStateObjectForClass(class'XComGameState_AdventChosen'));
 
         //do stuff
 		for (i = 0; i < CovAct.StaffSlots.Length; i++) {
@@ -55,16 +54,18 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 			Unit = SlotState.GetAssignedStaff();
 			if (Unit.bCaptured && Unit.IsSoldier() && Unit.IsAlive()) {
 				// `log("Unit was captured" @ Unit.GetFullName());
-				for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
-				{
-					CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
-					DupeUnit = CapturedUnit.GetReference();
-					UnitRef = Unit.GetReference();
-					if (DupeUnit.ObjectID == UnitRef.ObjectID) {
-						CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
-						Captor = string(ChosenState.GetMyTemplateName());
-						Captor = Split(Captor, "_", true);
-						class 'CapturedSoldiersManager'.static.RegisterDead(Unit, "Covert Action", CovAct.EndDateTime, CampaignIndex, Captor, CaptorFullName);
+				foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
+					for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
+					{
+						CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
+						DupeUnit = CapturedUnit.GetReference();
+						UnitRef = Unit.GetReference();
+						if (DupeUnit.ObjectID == UnitRef.ObjectID) {
+							CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
+							Captor = string(ChosenState.GetMyTemplateName());
+							Captor = Split(Captor, "_", true);
+							class 'CapturedSoldiersManager'.static.RegisterDead(Unit, "Covert Action", CovAct.EndDateTime, CampaignIndex, Captor, CaptorFullName);
+						}
 					}
 				}
 			if (Captor == "") {
