@@ -378,14 +378,14 @@ simulated function int SortByMissions(CapturedSoldiers_ListItem A, CapturedSoldi
 
 simulated function int SortByDate(CapturedSoldiers_ListItem A, CapturedSoldiers_ListItem B)
 {
-	local string ValA, ValB;
+	local TDateTime ValA, ValB;
 
-	ValA = A.Detail.KilledDate;
-	ValB = B.Detail.KilledDate;
+	ValA = A.Detail.MIADate;
+	ValB = B.Detail.MIADate;
 
-	if (ValA > ValB)
+	if (class 'X2StrategyGameRulesetDataStructures'.static.LessThan(ValA, ValB))
 		return m_bFlipSort ? -1 : 1;
-	else if( ValA < ValB )
+	else if(class 'X2StrategyGameRulesetDataStructures'.static.LessThan(ValB, ValA))
 		return m_bFlipSort ? 1 : -1;
 	return 0;
 }

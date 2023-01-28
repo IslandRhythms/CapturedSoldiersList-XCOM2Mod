@@ -31,7 +31,6 @@ static event OnLoadedSavedGame()
 
 	History = `XCOMHISTORY;
 	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
-	ChosenState = XComGameState_AdventChosen(History.GetSingleGameStateObjectForClass(class'XComGameState_AdventChosen'));
 	BattleData = XComGameState_BattleData(History.GetSingleGameStateObjectForClass(class 'XComGameState_BattleData'));
 
 	for(i = 0; i < AlienHQ.CapturedSoldiers.Length; i++)
@@ -41,14 +40,15 @@ static event OnLoadedSavedGame()
 		CaptorFullName = Captor;
 		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName); // add to the list
 	}
-
-	for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
-	{
+	foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
+		for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
+		{
 		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
 		CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
 		Captor = string(ChosenState.GetMyTemplateName());
 		Captor = Split(Captor, "_", true);
 		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName); // add to the list
+		}
 	}
 
 }
@@ -184,31 +184,37 @@ static event OnPostMission()
 	CampaignIndex = CampaignSettingsStateObject.GameIndex;
 
 	History = `XCOMHISTORY;
-	ChosenState = XComGameState_AdventChosen(History.GetSingleGameStateObjectForClass(class'XComGameState_AdventChosen'));
 	BattleData = XComGameState_BattleData(History.GetSingleGameStateObjectForClass(class 'XComGameState_BattleData'));
+	ChosenState = XComGameState_AdventChosen(History.GetGameStateForObjectID(BattleData.ChosenRef.ObjectID));
 
 	foreach `XCOMHQ.Squad(UnitRef)
 	{
 		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(UnitRef.ObjectID));
 		if (Unit.bCaptured && Unit.IsAlive())
 		{
-			for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
-			{
-				CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
-				DupeUnit = CapturedUnit.GetReference();
-				if (DupeUnit.ObjectID == UnitRef.ObjectID) {
-					CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
-					Captor = string(ChosenState.GetMyTemplateName());
-					Captor = Split(Captor, "_", true);
-					class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
-				}
-			}
-			if (Captor == "") {
+			// this only speeds up cases where the chosen wasn't on the previous mission. Still need to handle cases where they were on the mission.
+			if (BattleData.ChosenRef.ObjectID == 0) {
 				Captor = "Advent";
 				CaptorFullName = Captor;
-				class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
+			} else {
+				for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
+				{
+					CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
+					DupeUnit = CapturedUnit.GetReference();
+					if (DupeUnit.ObjectID == UnitRef.ObjectID) {
+						CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
+						Captor = string(ChosenState.GetMyTemplateName());
+						Captor = Split(Captor, "_", true);
+						class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
+					}
+				}
+				if (Captor == "") {
+					Captor = "Advent";
+					CaptorFullName = Captor;
+					class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
+				}
+				Captor = ""; // so the if statement can keep executing
 			}
-			Captor = ""; // so the if statement can keep executing
 		}
 	}
 	class 'CapturedSoldiersManager'.static.UpdateList(CampaignIndex);
