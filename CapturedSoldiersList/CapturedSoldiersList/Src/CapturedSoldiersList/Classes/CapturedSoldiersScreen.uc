@@ -159,61 +159,6 @@ simulated function OnDeceasedSelected( UIList kList, int index )
 	}
 }
 
-// need to take a hard look at these functions.
-simulated function ReallySaveToCharacterPool(name eAction)
-{
-	local CharacterPoolManager PoolMgr;
-	local TDialogueBoxData kDialogData;
-	local XComGameState_Unit PoolUnitState;
-	
-	PoolMgr = `CHARACTERPOOLMGR;
-	if(eAction == 'eUIAction_Accept')
-	{
-		PoolMgr = `CHARACTERPOOLMGR;	
-		//	create a soldier using the pool function so we have a clean slate to work with
-		if (SaveToPoolDetails.HasCustomization)
-		{
-			PoolUnitState = PoolMgr.CreateSoldier('Soldier');
-			//	copy appearance, name, and country of origin
-			PoolUnitState.SetTAppearance(SaveToPoolDetails.Customization);
-			PoolUnitState.SetCharacterName(SaveToPoolDetails.FirstName, SaveToPoolDetails.LastName, SaveToPoolDetails.NickName);
-			PoolUnitState.SetCountry(SaveToPoolDetails.CountryTemplateName);
-			//	save to the pool
-			PoolMgr.CharacterPool.AddItem(PoolUnitState);
-			PoolMgr.SaveCharacterPool();	
-			//	let the user know it worked
-			kDialogData.eType = eDialog_Normal;
-			kDialogData.strTitle = "Character customization saved";
-			kDialogData.strText = SaveToPoolDetails.SoldierName @ "is saved to character pool";
-			
-			if(!PC.Pres.ScreenStack.IsNotInStack(class'UICharacterPool'))
-				UICharacterPool(PC.Pres.ScreenStack.GetFirstInstanceOf(class'UICharacterPool')).UpdateData();
-		}
-		else
-		{
-			kDialogData.eType = eDialog_Warning;
-			kDialogData.strTitle = "Character customization saved failed";
-			kDialogData.strText = SaveToPoolDetails.SoldierName @ "has no customization. You imported this character with an older version of the mod.";
-		}
-		kDialogData.strAccept = class'UIUtilities_Text'.default.m_strGenericAccept;
-		Movie.Pres.UIRaiseDialog(kDialogData);
-	}
-}
-
-simulated function SaveToCharacterPool(name eAction)
-{
-	local TDialogueBoxData DialogData;
-
-	if(eAction == 'eUIAction_Accept')
-	{
-		DialogData.strTitle = "Save to character pool";
-		DialogData.strText = "Do you really want to save" @ SaveToPoolDetails.SoldierName @ "to the character pool";
-		DialogData.strAccept = class'UIDialogueBox'.default.m_strDefaultAcceptLabel;
-		DialogData.strCancel = class'UIDialogueBox'.default.m_strDefaultCancelLabel;
-		DialogData.fnCallback = ReallySaveToCharacterPool;
-		Movie.Pres.UIRaiseDialog( DialogData );
-	}
-}
 
 simulated function OpenMemorialDetail(CapturedSoldiers_ListItem icon)
 {
@@ -223,7 +168,6 @@ simulated function OpenMemorialDetail(CapturedSoldiers_ListItem icon)
 	local Texture2D StaffPicture;
 
 	Detail = icon.Detail;
-	SaveToPoolDetails = Detail;
 
 	DialogData.eType = eDialog_Normal;
 	DialogData.strTitle = Detail.SoldierName@"from"@Detail.CountryName;
