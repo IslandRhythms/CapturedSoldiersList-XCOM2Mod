@@ -31,53 +31,27 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 {
     local XComGameState_CovertAction CovAct;
 	local XComGameState_StaffSlot SlotState;
-	local int i, CampaignIndex;
-	local XComGameState_Unit Unit, CapturedUnit;
-	local XComGameState_AdventChosen ChosenState;
-	local StateObjectReference UnitRef, DupeUnit;
-	local XComGameState_CampaignSettings CampaignSettingsStateObject;
-	local String Captor, CaptorFullName;
-	local XComGameStateHistory History;
+	local int i;
+	local XComGameState_Unit Unit;
+	local XComGameState_CapturedSoldiersList List;
 
     CovAct = XComGameState_CovertAction(EventSource);
 	// `log("++++++++++++++++++++++++++++++++++++++++");
 	// `log("Covert Action Completed Listener");
+	// Possible value for what the covert action was: string(CovAct.m_TemplateName);
     if (CovAct != none)
     {
-		CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
-		CampaignIndex = CampaignSettingsStateObject.GameIndex;
-		History = `XCOMHISTORY;
-
         //do stuff
 		for (i = 0; i < CovAct.StaffSlots.Length; i++) {
 			SlotState = CovAct.GetStaffSlot(i);
 			Unit = SlotState.GetAssignedStaff();
 			if (Unit.bCaptured && Unit.IsSoldier() && Unit.IsAlive()) {
 				// `log("Unit was captured" @ Unit.GetFullName());
-				foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
-					for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
-					{
-						CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
-						DupeUnit = CapturedUnit.GetReference();
-						UnitRef = Unit.GetReference();
-						if (DupeUnit.ObjectID == UnitRef.ObjectID) {
-							CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
-							Captor = string(ChosenState.GetMyTemplateName());
-							Captor = Split(Captor, "_", true);
-						}
-					}
-				}
-			if (Captor == "") {
-				Captor = "Advent";
-				CaptorFullName = Captor;
+				List.addUnitToList(Unit, CovAct.EndDateTime);
 			}
-			Captor = ""; // so the if statement can keep executing
-			} else {
-				// `log("Unit was not captured" @ Unit.GetFullName());
-			}
-		}
 		
-    }
+		}
+	}
 
 	return ELR_NoInterrupt;
 }

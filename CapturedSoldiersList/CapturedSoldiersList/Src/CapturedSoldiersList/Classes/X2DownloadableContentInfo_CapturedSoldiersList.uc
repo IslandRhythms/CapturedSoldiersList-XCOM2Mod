@@ -59,6 +59,13 @@ exec function exportCapturedSoldiersList()
 	List.exportList();
 }
 
+exec function clearList() {
+	local XComGameState_CapturedSoldiersList List;
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
+	List.wipeList();
+}
+
+
 
 
 /// <summary>

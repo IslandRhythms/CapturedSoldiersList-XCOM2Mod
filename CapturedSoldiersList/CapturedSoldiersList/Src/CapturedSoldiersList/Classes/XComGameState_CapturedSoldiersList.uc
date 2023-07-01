@@ -63,7 +63,7 @@ function UpdateMIAList() {
 			// this only speeds up cases where the chosen wasn't on the previous mission. Still need to handle cases where they were on the mission.
 			if (BattleData.ChosenRef.ObjectID == 0) {
 				Detail.Captor = "Advent";
-				Detail.CaptorFullName = Captor;
+				Detail.CaptorFullName = Detail.Captor;
 			} else {
 				for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
 				{
@@ -73,8 +73,6 @@ function UpdateMIAList() {
 						Captor = string(ChosenState.GetMyTemplateName());
 						Detail.Captor = Split(Captor, "_", true);
 						Detail.CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
-						Detail.opName = BattleData.m_strOpName;
-						Detail.MIADate = BattleData.LocalTime;
 					}
 				}
 				if (Captor == "") {
@@ -83,6 +81,8 @@ function UpdateMIAList() {
 				}
 				Captor = ""; // so the if statement can keep executing
 			} // top level if unit is captured
+			Detail.opName = BattleData.m_strOpName;
+			Detail.MIADate = BattleData.LocalTime;
 			Analytics = XComGameState_Analytics(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_Analytics'));
 			UnitReference = Unit.GetReference();
 
@@ -128,6 +128,76 @@ function UpdateMIAList() {
 
 }
 
+function addUnitToList(XComGameState_Unit Troop, TDateTime MissingDate) {
+	local int i, CampaignIndex;
+	local XComGameState_Unit CapturedUnit;
+	local XComGameState_AdventChosen ChosenState;
+	local StateObjectReference UnitRef, DupeUnit;
+	local XComGameState_CampaignSettings CampaignSettingsStateObject;
+	local String Captor;
+	local XComGameStateHistory History;
+	local MemorialDetails Detail;
+
+	// Search for the captured unit
+	foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
+		for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
+		{
+			CapturedUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
+			DupeUnit = CapturedUnit.GetReference();
+			UnitRef = Troop.GetReference();
+			if (DupeUnit.ObjectID == UnitRef.ObjectID) {
+				Detail.CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
+				Captor = string(ChosenState.GetMyTemplateName());
+				Detail.Captor = Split(Captor, "_", true);
+			}
+			if (Captor == "") {
+				Detail.Captor = "Advent";
+				Detail.CaptorFullName = Detail.Captor;
+			}
+		}
+	}
+	Detail.opName = "Covert Action";
+	Detail.MIADate = MissingDate;
+	Analytics = XComGameState_Analytics(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_Analytics'));
+	UnitReference = Troop.GetReference();
+
+	Detail.Missions = Troop.GetNumMissions();
+	Detail.Kills = Troop.GetNumKills();
+
+	Hours = Analytics.GetUnitFloatValue( "ACC_UNIT_SERVICE_LENGTH", UnitReference );
+	Days = int(Hours / 24.0f);
+	Detail.DaysOnAvenger = Days;
+
+	Detail.CauseOfDeath = Troop.m_strCauseOfDeath;
+
+	Hours = Analytics.GetUnitFloatValue( "ACC_UNIT_HEALING", UnitReference );
+	Days = int( Hours / 24.0f );
+	Detail.DaysInjured = Days;
+
+	Detail.AttacksMade = Analytics.GetUnitFloatValue( "ACC_UNIT_SUCCESSFUL_ATTACKS", UnitReference );
+
+	Detail.DamageDealt = Analytics.GetUnitFloatValue( "ACC_UNIT_DEALT_DAMAGE", UnitReference );
+
+	Detail.AttacksSurvived = Analytics.GetUnitFloatValue( "ACC_UNIT_ABILITIES_RECIEVED", UnitReference );
+
+	// Detail.MissionDied = Detail.opName;
+	Detail.KilledDate = class'X2StrategyGameRulesetDataStructures'.static.GetDateString(Detail.MIADate, true);
+
+	Detail.Epitaph = Troop.m_strEpitaph;
+
+	Detail.CountryName = Troop.GetCountryTemplate().DisplayName;
+	Detail.ClassName = Troop.GetSoldierClassTemplate().DisplayName;
+	Detail.RankName = class'X2ExperienceConfig'.static.GetRankName(Troop.GetSoldierRank(), Troop.GetSoldierClassTemplateName());
+	Detail.SoldierName = Troop.GetName( eNameType_FullNick );
+	Detail.SoldierID = UnitReference.ObjectID;
+
+	Detail.Firstname = Troop.GetFirstName();
+	Detail.LastName = Troop.GetLastName();
+	Detail.NickName = Troop.GetNickName(true);
+	Detail.CountryTemplateName = Troop.GetCountry();
+	MIAList.AddItem(Detail);
+}
+
 function getCapturedSoldiers() {
 	local XComGameState_Unit Unit;
 	local StateObjectReference UnitReference;
@@ -138,11 +208,11 @@ function getCapturedSoldiers() {
 	local XComGameState_AdventChosen ChosenState;
 	local XComGameStateHistory History;
 	local int i, Hours, Days;
-	local XComGameState_BattleData BattleData;
 	local String Captor, CaptorFullName;
 	local MemorialDetails Detail;
 	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
 	CampaignIndex = CampaignSettingsStateObject.GameIndex;
+	Detail.CampaignIndex = CampaignIndex;
 
 	History = `XCOMHISTORY;
 	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
@@ -155,6 +225,8 @@ function getCapturedSoldiers() {
 		CaptorFullName = Captor;
 		Detail.Captor = Captor;
 		Detail.CaptorFullName = Captor;
+		Detail.MIADate = Unit.m_RecruitDate; // Since we can't get the battle data after the fact, just use the recruit date.
+		Detail.opName = "Log Operation"; // Same logic as above, just indicate had to use the log to get this troop.
 		Analytics = XComGameState_Analytics(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_Analytics'));
 		UnitReference = Unit.GetReference();
 
@@ -203,6 +275,8 @@ function getCapturedSoldiers() {
 			Captor = string(ChosenState.GetMyTemplateName());
 			Captor = Split(Captor, "_", true);
 			Detail.Captor = Captor;
+			Detail.MIADate = Unit.m_RecruitDate; // Since we can't get the battle data after the fact, just use the recruit date.
+			Detail.opName = "Log Operation"; // Same logic as above, just indicate had to use the log to get this troop.
 			Analytics = XComGameState_Analytics(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_Analytics'));
 			UnitReference = Unit.GetReference();
 
