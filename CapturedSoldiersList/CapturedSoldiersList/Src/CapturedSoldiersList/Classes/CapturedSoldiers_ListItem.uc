@@ -1,5 +1,5 @@
 // This is an Unreal Script
-class CapturedSoldiers_ListItem extends UIPersonnel_ListItem dependson(CapturedSoldiersManager);
+class CapturedSoldiers_ListItem extends UIPersonnel_ListItem dependson(XComGameState_CapturedSoldiersList);
 
 var MemorialDetails Detail;
 
