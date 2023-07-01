@@ -103,15 +103,17 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 // Probably needs modification
 simulated function PopulateData()
 {
-	local MemorialDetails Detail;
+	local int i;
+	local XComGameState_CapturedSoldiersList List;
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
 
-	foreach class'CapturedSoldiersManager'.default.DeadSoldiers(Detail)
+	for(i = 0; i < List.MIAList.Length; i++)
 	{
-		CapturedSoldiers_ListItem(MemorialList.CreateItem(class'CapturedSoldiers_ListItem')).InitItem(Detail); //.ProcessMouseEvents(OnItemMouseEvent);
+		CapturedSoldiers_ListItem(MemorialList.CreateItem(class'CapturedSoldiers_ListItem')).InitItem(List.MIAList[i]); //.ProcessMouseEvents(OnItemMouseEvent);
 	}
 	MemorialList.RealizeItems();
 
-	MC.FunctionString("SetEmptyLabel", class'CapturedSoldiersManager'.default.DeadSoldiers.Length == 0 ? "No missing soldiers" : "");
+	MC.FunctionString("SetEmptyLabel", List.MIAList.Length == 0 ? "No missing soldiers" : "");
 }
 
 simulated function ChangeSelection(UIList ContainerList, int ItemIndex)

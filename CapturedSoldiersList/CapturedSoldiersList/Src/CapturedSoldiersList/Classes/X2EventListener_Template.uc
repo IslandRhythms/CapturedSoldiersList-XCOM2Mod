@@ -64,14 +64,12 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 							CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
 							Captor = string(ChosenState.GetMyTemplateName());
 							Captor = Split(Captor, "_", true);
-							class 'CapturedSoldiersManager'.static.RegisterDead(Unit, "Covert Action", CovAct.EndDateTime, CampaignIndex, Captor, CaptorFullName);
 						}
 					}
 				}
 			if (Captor == "") {
 				Captor = "Advent";
 				CaptorFullName = Captor;
-				class 'CapturedSoldiersManager'.static.RegisterDead(Unit, "Covert Action", CovAct.EndDateTime, CampaignIndex, Captor, CaptorFullName);
 			}
 			Captor = ""; // so the if statement can keep executing
 			} else {

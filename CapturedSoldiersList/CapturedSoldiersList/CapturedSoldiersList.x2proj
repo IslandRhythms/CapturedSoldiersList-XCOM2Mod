@@ -24,9 +24,6 @@ tags= War Of The Chosen, UI, Facility, Gameplay</Description>
     <Content Include="Config\XComEngine.ini" />
     <Content Include="Config\XComGame.ini" />
     <Content Include="Localization\XComGame.int" />
-    <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiersManager.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\CapturedSoldiersList\Classes\CapturedSoldiersNavHelpHook.uc">
       <SubType>Content</SubType>
     </Content>

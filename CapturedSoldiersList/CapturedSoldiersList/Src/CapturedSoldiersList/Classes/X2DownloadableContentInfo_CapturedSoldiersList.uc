@@ -46,51 +46,20 @@ exec function SendRecruitablesToGulag()
 
 exec function populateCapturedSoldiersList() 
 {
-	local XComGameState_Unit Unit;
-	local XComGameState_CampaignSettings CampaignSettingsStateObject;
-	local int CampaignIndex;
-	local XComGameState_HeadquartersAlien AlienHQ;
-	local XComGameState_AdventChosen ChosenState;
-	local XComGameStateHistory History;
-	local int i;
-	local XComGameState_BattleData BattleData;
-	local String Captor, CaptorFullName;
-	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
-	CampaignIndex = CampaignSettingsStateObject.GameIndex;
-
-	History = `XCOMHISTORY;
-	AlienHQ = XComGameState_HeadquartersAlien(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersAlien'));
-	ChosenState = XComGameState_AdventChosen(History.GetSingleGameStateObjectForClass(class'XComGameState_AdventChosen'));
-	BattleData = XComGameState_BattleData(History.GetSingleGameStateObjectForClass(class 'XComGameState_BattleData'));
-
-	for(i = 0; i < AlienHQ.CapturedSoldiers.Length; i++)
-	{
-		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AlienHQ.CapturedSoldiers[i].ObjectID));
-		Captor = "Advent";
-		CaptorFullName = Captor;
-		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, "Advent");
-	}
-
-	for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
-	{
-		Unit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ChosenState.CapturedSoldiers[i].ObjectID));
-		CaptorFullName = ChosenState.FirstName $ " " $ ChosenState.NickName $ " " $ ChosenState.LastName;
-		Captor = string(ChosenState.GetMyTemplateName());
-		Captor = Split(Captor, "_", true);
-		class 'CapturedSoldiersManager'.static.RegisterDead(Unit, BattleData.m_strOpName, BattleData.LocalTime, CampaignIndex, Captor, CaptorFullName);
-	}
+	local XComGameState_CapturedSoldiersList List;
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
+	List.getCapturedSoldiers();
 
 }
 
-exec function clearList() {
-	class 'CapturedSoldiersManager'.static.WipeList();
-	`log("List Wiped");
+exec function exportCapturedSoldiersList() 
+{
+	local XComGameState_CapturedSoldiersList List;
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
+	List.exportList();
 }
 
-exec function clearCapturedSoldiersListDB() {
-	class 'CapturedSoldiersManager'.static.WipeCapturedSoldiersListDB();
-	`log("DB wiped");
-}
+
 
 /// <summary>
 /// This method is run if the player loads a saved game that was created prior to this DLC / Mod being installed, and allows the 
