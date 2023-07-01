@@ -129,15 +129,18 @@ function UpdateMIAList() {
 }
 
 function addUnitToList(XComGameState_Unit Troop, TDateTime MissingDate) {
-	local int i, CampaignIndex;
+	local int i, CampaignIndex, Hours, Days;
+	local XComGameState_Analytics Analytics;
 	local XComGameState_Unit CapturedUnit;
 	local XComGameState_AdventChosen ChosenState;
-	local StateObjectReference UnitRef, DupeUnit;
+	local StateObjectReference UnitRef, DupeUnit, UnitReference;
 	local XComGameState_CampaignSettings CampaignSettingsStateObject;
 	local String Captor;
 	local XComGameStateHistory History;
 	local MemorialDetails Detail;
-
+	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
+	CampaignIndex = CampaignSettingsStateObject.GameIndex;
+	Detail.CampaignIndex = CampaignIndex;
 	// Search for the captured unit
 	foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
 		for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)

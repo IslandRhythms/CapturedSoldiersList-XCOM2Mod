@@ -36,6 +36,7 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 	local XComGameState_CapturedSoldiersList List;
 
     CovAct = XComGameState_CovertAction(EventSource);
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
 	// `log("++++++++++++++++++++++++++++++++++++++++");
 	// `log("Covert Action Completed Listener");
 	// Possible value for what the covert action was: string(CovAct.m_TemplateName);
