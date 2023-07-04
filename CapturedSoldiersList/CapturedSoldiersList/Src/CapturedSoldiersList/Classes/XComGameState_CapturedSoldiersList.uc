@@ -41,7 +41,7 @@ function UpdateMIAList() {
 	local int CampaignIndex;
 	local XComGameState_Analytics Analytics;
 	local StateObjectReference UnitReference, UnitRef, DupeUnit;
-	local int Hours, Days, i;
+	local int Hours, Days, i, exists;
 	local XComGameState_Unit Unit, CapturedUnit;
 	local XComGameStateHistory History;
 	local XComGameState_BattleData BattleData;
@@ -54,6 +54,19 @@ function UpdateMIAList() {
 	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
 	CampaignIndex = CampaignSettingsStateObject.GameIndex;
 	Detail.CampaignIndex = CampaignIndex;
+	// clean up the list if able
+	for (i = 0; i < BattleData.RewardUnitOriginals.Length; i++) {
+		`LOG("ID of the unit in the array"@BattleData.RewardUnitOriginals[i].ObjectID);
+		Unit = XComGameState_Unit(History.GetGameStateForObjectID(BattleData.RewardUnitOriginals[i].ObjectID));
+		if (Unit.bCaptured) {
+			continue;
+		}
+		exists = MIAList.Find('SoldierID', BattleData.RewardUnitOriginals[i].ObjectID);
+		`LOG("Does a unit with that objectID exist?"@exists);
+		if (exists != -1) {
+			MIAList.Remove(exists, 1);
+		}
+	}
 	`LOG("Total number of troops deployed on the mission"@`XCOMHQ.Squad.Length);
 	foreach `XCOMHQ.Squad(UnitRef)
 	{
@@ -141,6 +154,7 @@ function addUnitToList(XComGameState_Unit Troop, TDateTime MissingDate) {
 	CampaignSettingsStateObject = XComGameState_CampaignSettings(`XCOMHISTORY.GetSingleGameStateObjectForClass(class'XComGameState_CampaignSettings', true));
 	CampaignIndex = CampaignSettingsStateObject.GameIndex;
 	Detail.CampaignIndex = CampaignIndex;
+	History = `XCOMHISTORY;
 	// Search for the captured unit
 	foreach History.IterateByClassType(class 'XComGameState_AdventChosen', ChosenState) {
 		for(i = 0; i < ChosenState.CapturedSoldiers.Length; i++)
