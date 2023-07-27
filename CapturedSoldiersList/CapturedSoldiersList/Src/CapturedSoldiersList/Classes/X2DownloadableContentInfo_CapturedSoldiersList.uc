@@ -76,7 +76,7 @@ exec function clearList() {
 static event OnLoadedSavedGame()
 {
 	CheckUpdateOrCreateNewGameState();
-
+	populateCapturedSoldiersList();
 }
 
 

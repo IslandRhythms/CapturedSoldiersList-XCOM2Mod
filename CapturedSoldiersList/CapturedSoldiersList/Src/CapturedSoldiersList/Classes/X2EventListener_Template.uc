@@ -34,6 +34,7 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 	local int i;
 	local XComGameState_Unit Unit;
 	local XComGameState_CapturedSoldiersList List;
+	local XComGameState NewGameState;
 
     CovAct = XComGameState_CovertAction(EventSource);
 	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
@@ -49,6 +50,9 @@ static function EventListenerReturn CheckForCapturedSoldiers(Object EventData, O
 			if (Unit.bCaptured && Unit.IsSoldier() && Unit.IsAlive()) {
 				// `log("Unit was captured" @ Unit.GetFullName());
 				List.addUnitToList(Unit, CovAct.EndDateTime);
+				NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Updating Captured Soldiers List");
+				NewGameState.ModifyStateObject(List.Class, List.ObjectID);
+				`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
 			}
 		
 		}
