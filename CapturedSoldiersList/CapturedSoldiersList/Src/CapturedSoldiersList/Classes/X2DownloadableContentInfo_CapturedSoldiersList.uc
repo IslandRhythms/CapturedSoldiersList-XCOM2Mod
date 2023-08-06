@@ -75,8 +75,10 @@ exec function clearList() {
 /// </summary>
 static event OnLoadedSavedGame()
 {
+	local XComGameState_CapturedSoldiersList List;
 	CheckUpdateOrCreateNewGameState();
-	populateCapturedSoldiersList();
+	List = XComGameState_CapturedSoldiersList(`XCOMHISTORY.GetSingleGameStateObjectForClass(class 'XComGameState_CapturedSoldiersList', true));
+	List.getCapturedSoldiers();
 }
 
 
